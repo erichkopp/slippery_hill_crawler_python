@@ -75,6 +75,7 @@ def get_data_from_tune_links():
         css_selectors["tuning"] = "soup.find(class_='field--name-field-r-tuning').find(class_='field__item').text"
         css_selectors["mp3_link"] = "'https://www.slippery-hill.com' + soup.find(class_='field--name-field-r-uploaded-file').find('audio').find('source')['src']"
         css_selectors["tune_URL"] = "tune_link"
+        css_selectors["collections"] = "soup.find(class_='field--name-field-r-collections-reference').find_all(['a'])"
         # css_selectors["year"] = "soup.find(class_='field--name-field-r-year').find(class_='field__item').text"
         # css_selectors["media_source"] = "soup.find(class_='field--name-field-r-media-source').find(class_='field__item').text"
 
@@ -86,6 +87,14 @@ def get_data_from_tune_links():
             except:
                 pass
 
+        # Strip HTML to only have text for Collections
+        for key, val in tune_dict.items():
+            if key == "collections":
+                collections = []
+                for collection in tune_dict["collections"]:
+                    collections.append(collection.text)
+                tune_dict["collections"] = collections
+
         with open("all_tunes_data.txt", "a") as f:
             f.write(f"{tune_dict}\n")
 
@@ -94,7 +103,7 @@ def get_data_from_tune_links():
         # Be nice
         time.sleep(5)
 
-# get_data_from_tune_links()
+get_data_from_tune_links()
 
 
 # ------------------------------------------
@@ -134,15 +143,17 @@ def remove_duplicates():
     tunes = []
     for tune in all_tunes_data:
         for key, val in tune.items():
-            if key == "mp3_link" and val not in temp:
+            if key == 'mp3_link' and val not in temp:
                 temp.append(val)
                 if tune not in tunes:
                     tunes.append(tune)
                     with open("all_tunes_data_no_duplicates.txt", "a") as f:
                         f.write(f"{tune}\n")
 
-    print(len(temp))
-    print(len(tunes))
+
+
+    # print(len(temp))
+    # print(len(tunes))
 
 # remove_duplicates()
 
